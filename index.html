@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Жасурбек акага — Туғилган кун муборак!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Marck+Script&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0b201a;
+    --bg-mid:#0f2c22;
+    --gold:#d9b872;
+    --gold-soft:#c9ac74;
+    --cream:#f3ead9;
+    --cream-dim:#cdbfa4;
+    --line:rgba(217,184,114,0.35);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg-deep);overflow-x:hidden;}
+  body{
+    font-family:'Manrope',sans-serif;
+    color:var(--cream);
+    position:relative;
+    min-height:100vh;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ================= BACKGROUND ================= */
+  #bg-canvas{position:fixed;inset:0;z-index:0;background:
+      radial-gradient(ellipse at 20% 10%, #143a2c 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 85%, #163d2e 0%, transparent 50%),
+      linear-gradient(160deg, var(--bg-mid) 0%, var(--bg-deep) 60%, #081711 100%);
+  }
+  .sparkle{position:fixed;border-radius:50%;background:radial-gradient(circle, rgba(255,235,190,0.95) 0%, rgba(255,235,190,0) 70%);pointer-events:none;z-index:1;animation:twinkle 4s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+
+  .thread{position:fixed;z-index:1;pointer-events:none;opacity:.5;}
+
+  /* Floating balloons */
+  .balloon-field{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;}
+  .balloon{position:absolute;bottom:-160px;width:46px;height:58px;border-radius:50% 50% 48% 48%;opacity:0;animation:floatUp linear infinite;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));}
+  .balloon::after{content:'';position:absolute;left:50%;top:100%;width:1px;height:60px;background:rgba(217,184,114,.5);transform:translateX(-50%);}
+  .balloon::before{content:'';position:absolute;left:50%;bottom:-9px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:9px solid inherit;transform:translateX(-50%) rotate(180deg);}
+  @keyframes floatUp{
+    0%{opacity:0;transform:translateX(0) translateY(0) rotate(-4deg);}
+    8%{opacity:.9;}
+    50%{transform:translateX(30px) translateY(-55vh) rotate(4deg);}
+    92%{opacity:.85;}
+    100%{opacity:0;transform:translateX(-15px) translateY(-112vh) rotate(-3deg);}
+  }
+
+  /* ================= ENTRANCE GATE ================= */
+  #gate{
+    position:fixed;inset:0;z-index:50;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    background:radial-gradient(ellipse at 50% 30%, #163a2b 0%, #0a1a14 75%);
+    text-align:center;padding:24px;transition:opacity .9s ease, visibility .9s ease;
+  }
+  #gate.hide{opacity:0;visibility:hidden;pointer-events:none;}
+  .gate-ring{width:104px;height:104px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:28px;animation:ringPulse 2.6s ease-in-out infinite;}
+  @keyframes ringPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,184,114,.25);}50%{box-shadow:0 0 0 14px rgba(217,184,114,0);}}
+  .gate-ring svg{width:40px;height:40px;stroke:var(--gold);}
+  #gate h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(26px,6vw,34px);letter-spacing:.04em;margin:0 0 6px;color:var(--cream);}
+  #gate p.script{font-family:'Marck Script',cursive;color:var(--gold);font-size:clamp(20px,5vw,26px);margin:0 0 30px;}
+  #gate-btn{
+    font-family:'Manrope',sans-serif;letter-spacing:.14em;font-size:12px;font-weight:600;text-transform:uppercase;
+    color:var(--bg-deep);background:linear-gradient(135deg,var(--gold-soft),var(--gold));
+    border:none;padding:15px 34px;border-radius:40px;cursor:pointer;
+    box-shadow:0 8px 24px rgba(217,184,114,.28);
+  }
+  #gate-btn:active{transform:scale(.97);}
+  #gate .hint{margin-top:16px;font-size:11px;letter-spacing:.08em;color:var(--cream-dim);opacity:.7;}
+
+  /* ================= TOP BAR ================= */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 18px;
+  }
+  .lang-switch{display:flex;align-items:center;gap:8px;background:rgba(11,32,26,.55);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:30px;padding:5px;}
+  .lang-btn{
+    border:none;background:transparent;color:var(--cream-dim);font-family:'Manrope';font-size:11px;font-weight:700;letter-spacing:.06em;
+    padding:7px 13px;border-radius:20px;cursor:pointer;transition:all .25s ease;
+  }
+  .lang-btn.active{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:var(--bg-deep);}
+  .script-toggle{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-left:2px;}
+  .script-toggle span{font-size:8px;letter-spacing:.05em;color:var(--cream-dim);opacity:.65;text-transform:uppercase;}
+  .script-mini{border:1px solid var(--line);background:rgba(217,184,114,.08);color:var(--gold-soft);font-size:9px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:10px;cursor:pointer;}
+  .script-mini.active{background:var(--gold);color:var(--bg-deep);border-color:var(--gold);}
+  .mute-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(11,32,26,.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .mute-btn svg{width:16px;height:16px;stroke:var(--gold);}
+
+  /* ================= MAIN CONTENT ================= */
+  main{position:relative;z-index:5;padding:96px 20px 60px;max-width:520px;margin:0 auto;}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease, transform .9s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  .hero{text-align:center;padding:20px 0 10px;}
+  .eyebrow{font-size:11px;letter-spacing:.28em;color:var(--gold-soft);text-transform:uppercase;margin-bottom:20px;font-weight:600;}
+  .name{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(44px,13vw,68px);letter-spacing:.03em;line-height:1;color:var(--cream);margin:0;text-shadow:0 0 30px rgba(217,184,114,.25);}
+  .amp{font-family:'Marck Script',cursive;color:var(--gold);font-size:clamp(28px,7vw,36px);display:block;margin:10px 0;}
+  .divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px 0;}
+  .divider .ln{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .divider svg{width:20px;height:20px;stroke:var(--gold);}
+  .datebox{font-size:13px;letter-spacing:.1em;color:var(--cream-dim);text-transform:uppercase;line-height:1.9;}
+  .datebox b{color:var(--gold-soft);font-weight:700;}
+
+  .card{
+    background:linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+    border:1px solid var(--line);border-radius:22px;padding:26px 22px;margin:22px 0;
+    backdrop-filter:blur(6px);
+  }
+  .card p{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.7;color:var(--cream);margin:0 0 14px;font-weight:500;}
+  .card p:last-child{margin-bottom:0;}
+  .signoff{font-family:'Marck Script',cursive;color:var(--gold);font-size:24px;text-align:right;display:block;margin-top:14px;}
+
+  .section-title{text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin:44px 0 18px;}
+
+  /* Gallery — swipe to reveal */
+  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .frame{
+    position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+    border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35);
+    touch-action:none;
+  }
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;background:linear-gradient(145deg,#1a3d2f,#0d241c);}
+  .frame .placeholder-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--cream-dim);font-size:11px;letter-spacing:.08em;text-align:center;padding:10px;}
+  .frame .placeholder-label svg{width:26px;height:26px;stroke:var(--gold-soft);opacity:.7;}
+  .cover{
+    position:absolute;inset:0;z-index:3;
+    background:linear-gradient(150deg,#173a2b,#0d251c 60%,#173a2b);
+    -webkit-mask-image:radial-gradient(circle 90px at var(--mx,50%) var(--my,50%), transparent 98%, black 100%);
+    mask-image:radial-gradient(circle 90px at var(--mx,50%) var(--my,50%), transparent 98%, black 100%);
+    transition:mask-position .05s linear;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cover .fingertip{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.85;animation:fingerPulse 1.8s ease-in-out infinite;}
+  .cover .fingertip svg{width:22px;height:22px;stroke:var(--gold);}
+  .cover .fingertip span{font-size:9px;letter-spacing:.08em;color:var(--cream-dim);text-transform:uppercase;text-align:center;}
+  @keyframes fingerPulse{0%,100%{transform:translateY(0);opacity:.6;}50%{transform:translateY(-6px);opacity:1;}}
+  .frame-caption{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:10px 10px 8px;background:linear-gradient(0deg, rgba(8,20,15,.85), transparent);font-size:10.5px;letter-spacing:.05em;color:var(--cream);text-transform:uppercase;pointer-events:none;}
+
+  .footer-note{text-align:center;margin-top:50px;padding-top:26px;border-top:1px solid var(--line);}
+  .footer-note .heart{font-size:22px;margin-bottom:8px;}
+  .footer-note p{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream-dim);line-height:1.7;}
+  .footer-name{font-family:'Marck Script',cursive;color:var(--gold);font-size:26px;display:block;margin-top:6px;}
+
+  .confetti-burst{position:fixed;inset:0;z-index:40;pointer-events:none;}
+  .confetti-piece{position:absolute;top:-20px;border-radius:2px;}
+
+  audio{display:none;}
+
+  ::selection{background:var(--gold);color:var(--bg-deep);}
+</style>
+</head>
+<body>
+
+<div id="bg-canvas"></div>
+<div class="balloon-field" id="balloonField"></div>
+<div id="sparkleField"></div>
+
+<!-- ================= ENTRANCE GATE ================= -->
+<div id="gate">
+  <div class="gate-ring">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </div>
+  <h1 data-i18n="gate_title">Сизни кутяпман…</h1>
+  <p class="script" data-i18n="gate_sub">бир зумда очилади</p>
+  <button id="gate-btn" data-i18n="gate_btn">Очиш ✦</button>
+  <div class="hint" data-i18n="gate_hint">товуш билан</div>
+</div>
+
+<!-- ================= TOP BAR ================= -->
+<header>
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="uz">UZ</button>
+    <button class="lang-btn" data-lang="tj">TJ</button>
+    <button class="lang-btn" data-lang="ru">RU</button>
+    <div class="script-toggle">
+      <span>alifbo</span>
+      <button class="script-mini" id="scriptToggle">lotin</button>
+    </div>
+  </div>
+  <button class="mute-btn" id="muteBtn" aria-label="Товушни ёқиш/ўчириш">
+    <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/></svg>
+  </button>
+</header>
+
+<audio id="bgMusic" loop preload="auto" autoplay>
+  <source src="music.m4a" type="audio/mp4">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ================= MAIN ================= -->
+<main>
+
+  <section class="hero reveal">
+    <div class="eyebrow" data-i18n="eyebrow">Оила аъзоларимиз номидан</div>
+    <h1 class="name">ЖАСУРБЕК</h1>
+    <span class="amp">акамизга</span>
+    <div class="divider">
+      <span class="ln"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.3"><path d="M12 21s-7-4.5-9.5-9C.6 8 2 4 6 4c2.2 0 3.6 1.2 4.5 2.6C11.4 5.2 12.8 4 15 4c4 0 5.4 4 3.5 8-2.5 4.5-9.5 9-9.5 9z" stroke="#d9b872"/></svg>
+      <span class="ln"></span>
+    </div>
+    <div class="datebox">
+      <b data-i18n="date_line">21 август · 2026</b><br>
+      <span data-i18n="date_sub">СИЗНИНГ КУНИНГИЗ</span>
+    </div>
+  </section>
+
+  <section class="card reveal">
+    <p data-i18n="msg1">Дунёда шундай одамлар борки, улар борлиги билан уй иссиқ, оила бирлашган бўлади. Сиз — ана шундайлардансиз, акажон!</p>
+    <p data-i18n="msg2">Сизнинг кулгингиз бизга куч беради, маслаҳатингиз — йўл кўрсатади. Бугун эса — фақат Сиз ҳақингиздаги кун!</p>
+    <p data-i18n="msg3">Туғилган кунингиз муборак бўлсин! Орзуларингиз рўёбга чиқсин, кулгингиз ҳеч қачон тугамасин 🎈</p>
+    <span class="signoff" data-i18n="signoff">севиб, оилангиз</span>
+  </section>
+
+  <div class="section-title" data-i18n="gallery_title">Хотиралар — бармоқ билан очинг</div>
+  <div class="gallery">
+    <div class="frame" data-caption="cap1">
+      <img src="photo1.jpg" alt="" onerror="this.style.display='none'">
+      <div class="placeholder-label"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.3"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-5-5-6 6"/></svg><span>photo1.jpg</span></div>
+      <div class="cover"><div class="fingertip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11.2V6.5a1.5 1.5 0 0 1 3 0v9.5c0 3-2 6-6 6s-6-2.5-7-5l-1.5-4a1.4 1.4 0 0 1 2.4-1.4l1.6 2"/></svg><span data-i18n="touch">Ушланг</span></div></div>
+      <div class="frame-caption" data-i18n="cap1">Болалигингиздан</div>
+    </div>
+    <div class="frame" data-caption="cap2">
+      <img src="photo2.jpg" alt="" onerror="this.style.display='none'">
+      <div class="placeholder-label"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.3"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-5-5-6 6"/></svg><span>photo2.jpg</span></div>
+      <div class="cover"><div class="fingertip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11.2V6.5a1.5 1.5 0 0 1 3 0v9.5c0 3-2 6-6 6s-6-2.5-7-5l-1.5-4a1.4 1.4 0 0 1 2.4-1.4l1.6 2"/></svg><span data-i18n="touch">Ушланг</span></div></div>
+      <div class="frame-caption" data-i18n="cap2">Қувноқ лаҳзалар</div>
+    </div>
+    <div class="frame" data-caption="cap3">
+      <img src="photo3.jpg" alt="" onerror="this.style.display='none'">
+      <div class="placeholder-label"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.3"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-5-5-6 6"/></svg><span>photo3.jpg</span></div>
+      <div class="cover"><div class="fingertip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11.2V6.5a1.5 1.5 0 0 1 3 0v9.5c0 3-2 6-6 6s-6-2.5-7-5l-1.5-4a1.4 1.4 0 0 1 2.4-1.4l1.6 2"/></svg><span data-i18n="touch">Ушланг</span></div></div>
+      <div class="frame-caption" data-i18n="cap3">Оилавий хотира</div>
+    </div>
+    <div class="frame" data-caption="cap4">
+      <img src="photo4.jpg" alt="" onerror="this.style.display='none'">
+      <div class="placeholder-label"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.3"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-5-5-6 6"/></svg><span>photo4.jpg</span></div>
+      <div class="cover"><div class="fingertip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M9 11.5V6a1.5 1.5 0 0 1 3 0v5"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11.2V6.5a1.5 1.5 0 0 1 3 0v9.5c0 3-2 6-6 6s-6-2.5-7-5l-1.5-4a1.4 1.4 0 0 1 2.4-1.4l1.6 2"/></svg><span data-i18n="touch">Ушланг</span></div></div>
+      <div class="frame-caption" data-i18n="cap4">Энг яхши ака</div>
+    </div>
+  </div>
+
+  <div class="footer-note reveal">
+    <div class="heart">🎈🎉🎈</div>
+    <p data-i18n="footer1">Сизни жуда-жуда яхши кўрамиз. Бу махсус кунингизда ёнингизда бўлишни истардик.</p>
+    <span class="footer-name">Туғилган кунингиз муборак, Жасурбек ака!</span>
+  </div>
+
+</main>
+
+<script>
+/* ============ I18N ============ */
+const dict = {
+  uz: {
+    gate_title:"Сизни кутяпман…", gate_sub:"бир зумда очилади", gate_btn:"Очиш ✦", gate_hint:"товуш билан",
+    eyebrow:"Оила аъзоларимиз номидан",
+    date_line:"21 август · 2026", date_sub:"СИЗНИНГ КУНИНГИЗ",
+    msg1:"Дунёда шундай одамлар борки, улар борлиги билан уй иссиқ, оила бирлашган бўлади. Сиз — ана шундайлардансиз, акажон!",
+    msg2:"Сизнинг кулгингиз бизга куч беради, маслаҳатингиз — йўл кўрсатади. Бугун эса — фақат Сиз ҳақингиздаги кун!",
+    msg3:"Туғилган кунингиз муборак бўлсин! Орзуларингиз рўёбга чиқсин, кулгингиз ҳеч қачон тугамасин 🎈",
+    signoff:"севиб, оилангиз",
+    gallery_title:"Хотиралар — бармоқ билан очинг",
+    touch:"Ушланг",
+    cap1:"Болалигингиздан", cap2:"Қувноқ лаҳзалар", cap3:"Оилавий хотира", cap4:"Энг яхши ака",
+    footer1:"Сизни жуда-жуда яхши кўрамиз. Бу махсус кунингизда ёнингизда бўлишни истардик.",
+  },
+  "uz-lotin": {
+    gate_title:"Sizni kutyapman…", gate_sub:"bir zumda ochiladi", gate_btn:"Ochish ✦", gate_hint:"tovush bilan",
+    eyebrow:"Oila a'zolarimiz nomidan",
+    date_line:"21 avgust · 2026", date_sub:"SIZNING KUNINGIZ",
+    msg1:"Dunyoda shunday odamlar borki, ular borligi bilan uy issiq, oila birlashgan bo'ladi. Siz — ana shundaylardansiz, akajon!",
+    msg2:"Sizning kulgingiz bizga kuch beradi, maslahatingiz — yo'l ko'rsatadi. Bugun esa — faqat Siz haqingizdagi kun!",
+    msg3:"Tug'ilgan kuningiz muborak bo'lsin! Orzularingiz ro'yobga chiqsin, kulgingiz hech qachon tugamasin 🎈",
+    signoff:"sevib, oilangiz",
+    gallery_title:"Xotiralar — barmoq bilan oching",
+    touch:"Ushlang",
+    cap1:"Bolaligingizdan", cap2:"Quvnoq lahzalar", cap3:"Oilaviy xotira", cap4:"Eng yaxshi aka",
+    footer1:"Sizni juda-juda yaxshi ko'ramiz. Bu maxsus kuningizda yoningizda bo'lishni istardik.",
+  },
+  tj: {
+    gate_title:"Шуморо интизорам…", gate_sub:"дар як лаҳза кушода мешавад", gate_btn:"Кушодан ✦", gate_hint:"бо садо",
+    eyebrow:"Аз номи аъзоёни оилаамон",
+    date_line:"21 август · 2026", date_sub:"РӮЗИ ШУМО",
+    msg1:"Дар ҷаҳон одамоне ҳастанд, ки бо мавҷудияти худ хонаро гарм ва оиларо мутаҳид мекунанд. Шумо аз ҳамин гунаед, додарҷон!",
+    msg2:"Табассуми Шумо ба мо қувват мебахшад, маслиҳати Шумо роҳро нишон медиҳад. Имрӯз бошад — рӯзи танҳо ба Шумо бахшидашуда!",
+    msg3:"Зодрӯзатон муборак бошад! Орзуҳоятон ба амал ояд, хандаатон ҳаргиз қатъ нашавад 🎈",
+    signoff:"бо муҳаббат, оилаатон",
+    gallery_title:"Хотираҳо — бо ангушт кушоед",
+    touch:"Даст занед",
+    cap1:"Аз кӯдакиатон", cap2:"Лаҳзаҳои хушнуд", cap3:"Хотираи оилавӣ", cap4:"Беҳтарин бародар",
+    footer1:"Шуморо бисёр дӯст медорем. Мехостем дар ин рӯзи хос дар паҳлуятон бошем.",
+  },
+  ru: {
+    gate_title:"Ждём вас…", gate_sub:"сейчас всё откроется", gate_btn:"Открыть ✦", gate_hint:"со звуком",
+    eyebrow:"От имени всей нашей семьи",
+    date_line:"21 августа · 2026", date_sub:"ВАШ ДЕНЬ",
+    msg1:"В мире есть люди, чьё присутствие делает дом тёплым, а семью — единой. Вы именно такой человек, дорогой брат!",
+    msg2:"Ваша улыбка даёт нам силы, а Ваш совет всегда указывает верный путь. И сегодня — день, посвящённый только Вам!",
+    msg3:"С днём рождения! Пусть все мечты сбываются, а улыбка никогда не покидает Вас 🎈",
+    signoff:"с любовью, семья",
+    gallery_title:"Воспоминания — откройте пальцем",
+    touch:"Коснитесь",
+    cap1:"С детства", cap2:"Весёлые моменты", cap3:"Семейная память", cap4:"Лучший брат",
+    footer1:"Мы Вас очень любим. Хотели бы быть рядом в этот особенный день.",
+  }
+};
+let currentLang = "uz";
+let currentScript = "cyr"; // cyr | lat (only applies to uz)
+
+function applyLang(){
+  const key = (currentLang === "uz" && currentScript === "lat") ? "uz-lotin" : currentLang;
+  const d = dict[key] || dict.uz;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k = el.getAttribute("data-i18n");
+    if(d[k]) el.textContent = d[k];
+  });
+}
+document.querySelectorAll(".lang-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".lang-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentLang = btn.dataset.lang;
+    const scriptToggle = document.getElementById("scriptToggle");
+    scriptToggle.style.display = (currentLang === "uz") ? "inline-block" : "none";
+    applyLang();
+  });
+});
+document.getElementById("scriptToggle").addEventListener("click", function(){
+  currentScript = (currentScript === "cyr") ? "lat" : "cyr";
+  this.classList.toggle("active");
+  this.textContent = currentScript === "lat" ? "кирилл" : "lotin";
+  applyLang();
+});
+
+/* ============ BACKGROUND SPARKLES ============ */
+const sparkleField = document.getElementById("sparkleField");
+for(let i=0;i<25;i++){
+  const s = document.createElement("div");
+  s.className = "sparkle";
+  const size = 2 + Math.random()*3;
+  s.style.width = size+"px"; s.style.height = size+"px";
+  s.style.left = Math.random()*100+"vw";
+  s.style.top = Math.random()*100+"vh";
+  s.style.animationDelay = (Math.random()*4)+"s";
+  s.style.animationDuration = (3+Math.random()*3)+"s";
+  sparkleField.appendChild(s);
+}
+
+/* ============ BALLOONS ============ */
+const balloonColors = ["#c94f4f","#d9b872","#3f7d5c","#c46b3e","#8a5fb0","#3e7fa6"];
+const balloonField = document.getElementById("balloonField");
+function spawnBalloon(){
+  const b = document.createElement("div");
+  b.className = "balloon";
+  const color = balloonColors[Math.floor(Math.random()*balloonColors.length)];
+  b.style.background = `radial-gradient(circle at 32% 28%, ${color}dd, ${color})`;
+  b.style.borderTopColor = color;
+  b.style.left = (Math.random()*90)+"vw";
+  const dur = 8 + Math.random()*6;
+  b.style.animationDuration = dur+"s";
+  const scale = 0.7 + Math.random()*0.7;
+  b.style.transform = `scale(${scale})`;
+  balloonField.appendChild(b);
+  setTimeout(()=>b.remove(), dur*1000 + 500);
+}
+setInterval(spawnBalloon, 1200);
+for(let i=0;i<6;i++) setTimeout(spawnBalloon, i*300);
+
+/* ============ SCROLL REVEAL ============ */
+const revealEls = document.querySelectorAll(".reveal");
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+},{threshold:0.15});
+revealEls.forEach(el=>io.observe(el));
+
+/* ============ IMAGE REVEAL (finger scratch) ============ */
+document.querySelectorAll(".frame").forEach(frame=>{
+  const cover = frame.querySelector(".cover");
+  function setPos(x,y){
+    const rect = frame.getBoundingClientRect();
+    const mx = ((x-rect.left)/rect.width*100).toFixed(1)+"%";
+    const my = ((y-rect.top)/rect.height*100).toFixed(1)+"%";
+    cover.style.setProperty("--mx", mx);
+    cover.style.setProperty("--my", my);
+  }
+  let active = false;
+  frame.addEventListener("pointerdown", e=>{ active=true; setPos(e.clientX,e.clientY); cover.querySelector(".fingertip").style.opacity=0; });
+  frame.addEventListener("pointermove", e=>{ if(active) setPos(e.clientX,e.clientY); });
+  window.addEventListener("pointerup", ()=>active=false);
+  frame.addEventListener("pointercancel", ()=>active=false);
+});
+
+/* ============ MUSIC + GATE ============ */
+const music = document.getElementById("bgMusic");
+const muteBtn = document.getElementById("muteBtn");
+const soundIcon = document.getElementById("soundIcon");
+const gate = document.getElementById("gate");
+
+// Sahifa ochilishi bilan avtomatik ijro etishga urinish
+window.addEventListener("DOMContentLoaded", () => {
+  music.volume = 1.0;
+  music.play().catch(() => {
+    // Brauzer avtomatik bloklasa, ekranning istalgan joyiga bosganda yoqiladi
+    document.body.addEventListener("click", () => {
+      if(music.paused) music.play();
+    }, { once: true });
+  });
+});
+
+document.getElementById("gate-btn").addEventListener("click", ()=>{
+  gate.classList.add("hide");
+  if(music.paused) {
+    music.play().catch(()=>{});
+  }
+  revealEls.forEach((el,i)=>{
+    setTimeout(()=>el.classList.add("in"), i*120);
+  });
+});
+
+let muted = false;
+muteBtn.addEventListener("click", ()=>{
+  muted = !muted;
+  music.muted = muted;
+  soundIcon.innerHTML = muted
+    ? '<path d="M11 5 6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'
+    : '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/>';
+});
+
+applyLang();
+</script>
+</body>
+</html>
